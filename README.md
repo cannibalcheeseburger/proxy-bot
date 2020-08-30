@@ -1,6 +1,4 @@
-
-
-# Project Name
+# Proxy Bot
 
 Keep Walkin . Nothing to see here
 

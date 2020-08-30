@@ -132,4 +132,5 @@ dmypy.json
 # Some files i use
 
 try.*
-
+config.py
+setup.py
