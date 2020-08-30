@@ -1,4 +1,4 @@
-from proxy_bot import proxy_bot
+import Proxy_bot.proxy_bot as pb
 
 if __name__ == "__main__":
-    proxy_bot.main()
+    pb.main()
