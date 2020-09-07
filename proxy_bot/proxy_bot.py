@@ -1,11 +1,18 @@
 from .constants import *
+import selenium.common.exceptions
 from  selenium import webdriver
 from .config import *
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 import time
+from .recording import *
+from .scheduler import *
 
+
+init = get_time()
+
+today = get_day()
 
 opt = Options()
 opt.add_argument("--disable-infobars")
@@ -21,34 +28,69 @@ opt.add_experimental_option("prefs", { \
 
 
 def main():
-    driver = webdriver.Chrome(chrome_options=opt, executable_path=r'chromedriver')    
-    driver.get('https://accounts.google.com/signin/v2/identifier?ltmpl=meet&continue=https%3A%2F%2Fmeet.google.com%3Fhs%3D193&_ga=2.57642083.850847125.1599156917-360711165.1599156917&flowName=GlifWebSignIn&flowEntry=ServiceLogin')
-    #driver.find_element_by_css_selector('body > header > div.glue-header__bar.glue-header__bar--desktop.glue-header__drawer > div > div.glue-header__container.glue-header__container--cta > div.primary-meet-cta.tbd > div > span:nth-child(1) > a').click()
-    driver.find_element_by_id("identifierId").send_keys(platform_pass['meet']['user'])
-    driver.find_element_by_css_selector("#identifierNext > div > button").click()
-    driver.implicitly_wait(10)   
-    driver.find_element_by_css_selector("#password > div.aCsJod.oJeWuf > div > div.Xb9hP > input").send_keys(platform_pass['meet']['pass'])
-    driver.implicitly_wait(2)   
-    driver.find_element_by_css_selector("#passwordNext > div > button").click()
-    driver.implicitly_wait(20)
-    time.sleep(5)
-    driver.get('https://meet.google.com/jic-usuh-smk')
-    time.sleep(5)
-    driver.refresh()
-    time.sleep(5)
-         # Turning off video 
-    driver.find_element_by_xpath("//*[@id='yDmH0d']/c-wiz/div/div/div[4]/div[3]/div/div[2]/div/div/div[1]/div[1]/div[3]/div[2]/div/div").click()
-    time.sleep(5)
-        # turning off audio
-    driver.find_element_by_xpath("//*[@id='yDmH0d']/c-wiz/div/div/div[4]/div[3]/div/div[2]/div/div/div[1]/div[1]/div[3]/div[1]/div/div/div").click()
-    time.sleep(4)
-        # Join class
-    driver.find_element_by_xpath("//*[@id='yDmH0d']/c-wiz/div/div/div[4]/div[3]/div/div[2]/div/div/div[2]/div/div[2]/div/div[1]/div[1]/span").click()
-    time.sleep(3)
-    driver.find_element_by_xpath('//*[@id="ow3"]/div[1]/div/div[4]/div[3]/div[6]/div[3]/div/div[2]/div[1]').click()
-    time.sleep(2)
-    count = driver.find_element_by_class_name('rua5Nb').text
-    print("Number of people connencted ",count)
+    print("\t\t\tProgram Init and Date: "+init+" "+today+"\n\n")
+    print("\t\t\tToday's Schedule\n")
+    
+    for t in  schedule[today].keys():
+        print(t+" "+schedule[today][t][0]) 
+    
+    print("\n\nCurrent class : ",next_class(today,init)[0])
+    
+    while True:
+        last_time = get_time()
+        print("\n\n\t\t\tCurrent Time: "+last_time)
+        ret =  start_session()
+        if ret :
+            print('Session unsuccesful')
+        else:
+            print('Session Successful')
+
+def start_session():
+    try:
+        driver = webdriver.Chrome(chrome_options=opt, executable_path=r'chromedriver.exe')    
+        driver.get('https://accounts.google.com/signin/v2/identifier?ltmpl=meet&continue=https%3A%2F%2Fmeet.google.com%3Fhs%3D193&_ga=2.57642083.850847125.1599156917-360711165.1599156917&flowName=GlifWebSignIn&flowEntry=ServiceLogin')
+        driver.find_element_by_id("identifierId").send_keys(platform_pass['user'])
+        driver.find_element_by_css_selector("#identifierNext > div > button").click()
+        driver.implicitly_wait(10)   
+        driver.find_element_by_css_selector("#password > div.aCsJod.oJeWuf > div > div.Xb9hP > input").send_keys(platform_pass['pass'])
+        driver.implicitly_wait(2)   
+        driver.find_element_by_css_selector("#passwordNext > div > button").click()
+        driver.implicitly_wait(20)
+        time.sleep(5)
+       #Replace this
+        driver.get('https://classroom.google.com/u/2/c/MTM4OTIyNDk5Njkw')
+      
+        time.sleep(5)
+        link = driver.find_element_by_xpath('//*[@id="yDmH0d"]/div[2]/div[1]/div[1]/div/div[2]/div[2]/span/a/div').text
+
+        print("Linked For google meet:"+ link)
+        driver.get(link)
+        time.sleep(5)
+        driver.refresh()
+        time.sleep(5)
+            # Turning off video 
+        driver.find_element_by_xpath("//*[@id='yDmH0d']/c-wiz/div/div/div[4]/div[3]/div/div[2]/div/div/div[1]/div[1]/div[3]/div[2]/div/div").click()
+        time.sleep(5)
+            #  off audioturning
+        driver.find_element_by_xpath("//*[@id='yDmH0d']/c-wiz/div/div/div[4]/div[3]/div/div[2]/div/div/div[1]/div[1]/div[3]/div[1]/div/div/div").click()
+        time.sleep(4)
+            # Join class
+        driver.find_element_by_xpath("//*[@id='yDmH0d']/c-wiz/div/div/div[4]/div[3]/div/div[2]/div/div/div[2]/div/div[2]/div/div[1]/div[1]/span").click()
+        time.sleep(3)
+        start_rec()
+        driver.find_element_by_xpath('//*[@id="ow3"]/div[1]/div/div[4]/div[3]/div[6]/div[3]/div/div[2]/div[1]').click()
+        time.sleep(2)
+        count = driver.find_element_by_class_name('rua5Nb').text
+        members = int(count[1:-1])
+        print("Number of people connencted ",members)
+    
+    # handles all exceptions cuz me lazy
+    except:
+        print
+        driver.close()
+        return 1
+    
+    return 0
 
 if __name__ == '__main__':
     main()
