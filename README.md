@@ -1,6 +1,58 @@
 # Proxy Bot
 
-Keep Walkin . Nothing to see here
+[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
+
+Bug infested bot to take your online college course lectures for you.
+
+IDK if it work tbh . Not tested but automated logins and joimimh meetingd work so idk. 
+
+## Installation
+
+### Build from Source
+
+Clone the repository and checkout to stable commit
+
+```
+git clone https://github.com/cannibalcheeseburger/proxy-bot.git
+cd environment-setup
+```
+
+### Install Requirements
+
+For pipenv:
+```
+pipenv install
+```
+For pip:
+```
+pip install -r requirements.txt
+```
+
+## Usage
+
+Add `config.py` file in `Proxy_bot/` folder in the format:
+
+```
+platform_pass = {
+                'user':'<Your college id>',
+                'pass':'<Google meet password>',
+                }
+```
+
+### Running script
+
+```
+python main.py
+```
+
+Also adjust your time table in `Proxy_bot/constants.py` with links to your google classroom which contains your google meet links in description.
+
+
+## Help Me ;_;
+
+As i said this code is basically some useful script inside bugs ridden files.
+Help will be appreciated with high midichlorine levels in blood.
 
 ### Contact / Social Media
 
