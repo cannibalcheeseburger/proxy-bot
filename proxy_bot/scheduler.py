@@ -19,10 +19,10 @@ def next_class(today,now):
 
     for timing in schedule[today].keys():
         if int(now[:2]) < int(timing[:2]):
-            
+            next_cl = schedule[today][timing]
+            break
+    else:
+        next_cl = ['No class','Na']
 
-    return current_class
+    return current_class,next_cl
 
-if __name__ == "__main__":
-    print(get_time())
-    print(get_day())

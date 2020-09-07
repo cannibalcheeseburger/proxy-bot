@@ -34,18 +34,37 @@ def main():
     for t in  schedule[today].keys():
         print(t+" "+schedule[today][t][0]) 
     
-    print("\n\nCurrent class : ",next_class(today,init)[0])
-    
+    curr,next_cl = next_class(today,init)
+
+    print("\n\nCurrent class : ",curr[0])
+    print("\n\nNext Class: ",next_cl[0])
+
     while True:
         last_time = get_time()
-        print("\n\n\t\t\tCurrent Time: "+last_time)
-        ret =  start_session()
-        if ret :
-            print('Session unsuccesful')
-        else:
-            print('Session Successful')
+        curr,next_cl = next_class(today,last_time)
 
-def start_session():
+        print("\n\nCurrent class : ",curr[0])
+        print("\n\nNext Class: ",next_cl[0])
+
+        print("\n\n\t\t\tCurrent Time: "+last_time)
+        
+        if curr[1]!='NA':
+                
+            ret =  start_session(curr,last_time)
+            
+            if ret :
+                print('Session unsuccesful')
+            else:
+                print('Session Successful')
+
+        else:
+
+            print("\n\nNo session online right now\n Sleeping for 5 min")    
+
+        time.sleep(5*60)
+
+
+def start_session(current,last_time):
     try:
         driver = webdriver.Chrome(chrome_options=opt, executable_path=r'chromedriver.exe')    
         driver.get('https://accounts.google.com/signin/v2/identifier?ltmpl=meet&continue=https%3A%2F%2Fmeet.google.com%3Fhs%3D193&_ga=2.57642083.850847125.1599156917-360711165.1599156917&flowName=GlifWebSignIn&flowEntry=ServiceLogin')
@@ -58,7 +77,8 @@ def start_session():
         driver.implicitly_wait(20)
         time.sleep(5)
        #Replace this
-        driver.get('https://classroom.google.com/u/2/c/MTM4OTIyNDk5Njkw')
+        print('\n\n\t\t Opening session for ',current[0])
+        driver.get(current[1])
       
         time.sleep(5)
         link = driver.find_element_by_xpath('//*[@id="yDmH0d"]/div[2]/div[1]/div[1]/div/div[2]/div[2]/span/a/div').text
@@ -83,7 +103,18 @@ def start_session():
         count = driver.find_element_by_class_name('rua5Nb').text
         members = int(count[1:-1])
         print("Number of people connencted ",members)
-    
+        while members > 7:
+            count = driver.find_element_by_class_name('rua5Nb').text
+            members = int(count[1:-1])
+            print("Number of people connencted ",members)
+            time.sleep(5*60)
+
+
+        print("\n\n\t\tMembers less than 7...quitting....")
+        stop_rec()
+        driver.close()
+        new_time = get_time()
+        print("Session Time: ",(int(new_time[:2]) - int(last_time[:2]))*60 +( 60 - int(last_time[2:]) ) )
     # handles all exceptions cuz me lazy
     except:
         print
